@@ -172,6 +172,24 @@ app.get('/api/run-stream', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`🚀 Shell API Server 啟動於 http://localhost:${PORT}`);
 });
+
+// ✅ Graceful shutdown：Ctrl+C 時正確關閉 server 並釋放 port
+function gracefulShutdown(signal) {
+  console.log(`\n⏹ 收到 ${signal}，正在關閉 server...`);
+  server.close(() => {
+    console.log('✅ Server 已關閉，port 已釋放');
+    process.exit(0);
+  });
+
+  // 如果 5 秒內沒關完，強制結束
+  setTimeout(() => {
+    console.error('⚠️ 強制關閉 server');
+    process.exit(1);
+  }, 5000);
+}
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));   // Ctrl+C
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM')); // kill command
