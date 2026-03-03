@@ -14,7 +14,6 @@ const CONFIG_PATH = path.resolve(__dirname, 'config.json');
 app.use(cors());
 app.use(express.json());
 
-// ── 讀寫 config 的輔助函式 ──
 function readConfig() {
   try {
     const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
