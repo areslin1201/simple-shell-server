@@ -9,11 +9,26 @@ const PORT = 4000;
 
 // Shell 資料夾的絕對路徑
 const SHELL_DIR = path.resolve(__dirname, '../shell');
+const CONFIG_PATH = path.resolve(__dirname, 'config.json');
 
 app.use(cors());
 app.use(express.json());
 
-// ✅ API 1：列出所有可用的 shell scripts
+// ── 讀寫 config 的輔助函式 ──
+function readConfig() {
+  try {
+    const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
+    return JSON.parse(raw);
+  } catch {
+    return { categories: [] };
+  }
+}
+
+function writeConfig(config) {
+  fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
+}
+
+// ✅ API：列出所有可用的 shell scripts
 app.get('/api/scripts', (req, res) => {
   fs.readdir(SHELL_DIR, (err, files) => {
     if (err) return res.status(500).json({ error: '無法讀取 shell 資料夾' });
@@ -22,7 +37,68 @@ app.get('/api/scripts', (req, res) => {
   });
 });
 
-// ✅ API 2：以 SSE 串流方式執行 shell script（即時輸出）
+// ✅ API：列出 shell/ 目錄下所有可用 .sh 檔案（供管理介面選擇）
+app.get('/api/shell-files', (req, res) => {
+  fs.readdir(SHELL_DIR, (err, files) => {
+    if (err) return res.status(500).json({ error: '無法讀取 shell 資料夾' });
+    const shellFiles = files.filter(f => f.endsWith('.sh'));
+    res.json({ files: shellFiles });
+  });
+});
+
+// ✅ API：取得所有分類（含對應 scripts）
+app.get('/api/categories', (req, res) => {
+  const config = readConfig();
+  res.json({ categories: config.categories });
+});
+
+// ✅ API：新增分類
+app.post('/api/categories', (req, res) => {
+  const { name, icon, scripts } = req.body;
+  if (!name) return res.status(400).json({ error: '名稱為必填' });
+
+  const config = readConfig();
+  const id = name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + '_' + Date.now();
+  const newCategory = {
+    id,
+    name,
+    icon: icon || 'terminal',
+    scripts: scripts || [],
+  };
+  config.categories.push(newCategory);
+  writeConfig(config);
+  res.json({ success: true, category: newCategory });
+});
+
+// ✅ API：修改分類
+app.put('/api/categories/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, icon, scripts } = req.body;
+  const config = readConfig();
+  const idx = config.categories.findIndex(c => c.id === id);
+  if (idx === -1) return res.status(404).json({ error: '找不到該分類' });
+
+  if (name !== undefined) config.categories[idx].name = name;
+  if (icon !== undefined) config.categories[idx].icon = icon;
+  if (scripts !== undefined) config.categories[idx].scripts = scripts;
+
+  writeConfig(config);
+  res.json({ success: true, category: config.categories[idx] });
+});
+
+// ✅ API：刪除分類
+app.delete('/api/categories/:id', (req, res) => {
+  const { id } = req.params;
+  const config = readConfig();
+  const idx = config.categories.findIndex(c => c.id === id);
+  if (idx === -1) return res.status(404).json({ error: '找不到該分類' });
+
+  config.categories.splice(idx, 1);
+  writeConfig(config);
+  res.json({ success: true });
+});
+
+// ✅ API：以 SSE 串流方式執行 shell script（即時輸出）
 app.get('/api/run-stream', (req, res) => {
   const { script, args = '' } = req.query;
 
