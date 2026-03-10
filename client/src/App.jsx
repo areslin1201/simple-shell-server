@@ -42,17 +42,12 @@ function App() {
 
       <main className="main-content">
         {activeCategory ? (
-          <Terminal
-            scripts={activeCategory.scripts}
-            categoryName={activeCategory.name}
-          />
+          <Terminal scripts={activeCategory.scripts} categoryName={activeCategory.name} />
         ) : (
           <div className="empty-state">
             <div className="empty-state__icon">？</div>
             <h2 className="empty-state__title">尚無功能分類</h2>
-            <p className="empty-state__desc">
-              點擊左側「管理平台」來新增你的第一個功能分類
-            </p>
+            <p className="empty-state__desc">點擊左側「管理平台」來新增你的第一個功能分類</p>
           </div>
         )}
       </main>

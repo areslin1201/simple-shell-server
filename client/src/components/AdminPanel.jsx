@@ -62,7 +62,7 @@ export default function AdminPanel({ categories, onClose, onRefresh }) {
   };
 
   // 更新分類
-  const handleUpdate = async (cat) => {
+  const handleUpdate = async cat => {
     setSaving(true);
     try {
       const res = await fetch(`/api/categories/${cat.id}`, {
@@ -81,7 +81,7 @@ export default function AdminPanel({ categories, onClose, onRefresh }) {
   };
 
   // 刪除分類
-  const handleDelete = async (id) => {
+  const handleDelete = async id => {
     if (!confirm('確定要刪除此分類嗎？')) return;
     setSaving(true);
     try {
@@ -135,14 +135,14 @@ export default function AdminPanel({ categories, onClose, onRefresh }) {
         {/* Header */}
         <div className="admin-panel__header">
           <h2 className="admin-panel__title">⚙️ 管理平台</h2>
-          <button className="admin-panel__close" onClick={onClose}>✕</button>
+          <button className="admin-panel__close" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
         {/* Message toast */}
         {message && (
-          <div className={`admin-toast admin-toast--${message.type}`}>
-            {message.text}
-          </div>
+          <div className={`admin-toast admin-toast--${message.type}`}>{message.text}</div>
         )}
 
         <div className="admin-panel__body">
@@ -163,12 +163,14 @@ export default function AdminPanel({ categories, onClose, onRefresh }) {
                 onChange={e => setNewIcon(e.target.value)}
               >
                 {ICON_OPTIONS.map(o => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
+                  <option key={o.value} value={o.value}>
+                    {o.label}
+                  </option>
                 ))}
               </select>
-              <button 
+              <button
                 type="button"
-                className="btn btn--add" 
+                className="btn btn--add"
                 disabled={saving || !newName.trim()}
                 onClick={handleAdd}
               >
@@ -195,7 +197,9 @@ export default function AdminPanel({ categories, onClose, onRefresh }) {
                       onChange={e => updateIcon(catIdx, e.target.value)}
                     >
                       {ICON_OPTIONS.map(o => (
-                        <option key={o.value} value={o.value}>{o.label}</option>
+                        <option key={o.value} value={o.value}>
+                          {o.label}
+                        </option>
                       ))}
                     </select>
                   </div>

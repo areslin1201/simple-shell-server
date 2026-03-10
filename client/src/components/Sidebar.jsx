@@ -49,13 +49,9 @@ export default function Sidebar({ categories, activeId, onSelect, onOpenAdmin })
             onClick={() => onSelect(cat.id)}
             title={cat.name}
           >
-            <span className="sidebar__item-icon">
-              {iconMap[cat.icon] || '📋'}
-            </span>
+            <span className="sidebar__item-icon">{iconMap[cat.icon] || '📋'}</span>
             {!collapsed && <span className="sidebar__item-text">{cat.name}</span>}
-            {!collapsed && (
-              <span className="sidebar__item-badge">{cat.scripts.length}</span>
-            )}
+            {!collapsed && <span className="sidebar__item-badge">{cat.scripts.length}</span>}
           </button>
         ))}
       </nav>

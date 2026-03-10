@@ -5,7 +5,7 @@ services:
     build:
       context: ./server
     ports:
-      - "4000:4000"
+      - '4000:4000'
     volumes:
       # 將本機的 shell 資料夾掛載進 container，讓 server 可以讀取與執行
       - ./shell:/app/shell
@@ -17,7 +17,7 @@ services:
     build:
       context: ./client
     ports:
-      - "5173:5173"
+      - '5173:5173'
     environment:
       # 告訴 Vite proxy 將 /api 導向 server container 的 4000 port
       - VITE_API_TARGET=http://server:4000

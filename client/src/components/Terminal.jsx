@@ -39,7 +39,7 @@ export default function Terminal({ scripts, categoryName }) {
     const es = new EventSource(url);
     eventSourceRef.current = es;
 
-    es.onmessage = (event) => {
+    es.onmessage = event => {
       if (event.data === '[DONE]') {
         es.close();
         setRunning(false);
@@ -52,7 +52,10 @@ export default function Terminal({ scripts, categoryName }) {
         if (type === 'exit') {
           setExitInfo(data);
         } else {
-          setLogs(prev => [...prev, { type, text: typeof data === 'string' ? data : JSON.stringify(data) }]);
+          setLogs(prev => [
+            ...prev,
+            { type, text: typeof data === 'string' ? data : JSON.stringify(data) },
+          ]);
         }
       } catch {
         // ignore parse errors
@@ -100,7 +103,9 @@ export default function Terminal({ scripts, categoryName }) {
           >
             {scripts.length === 0 && <option value="">— 無可用 Script —</option>}
             {scripts.map(s => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </div>
@@ -147,14 +152,18 @@ export default function Terminal({ scripts, categoryName }) {
         </div>
         <div className="terminal__body">
           {logs.length === 0 && !running && (
-            <div className="terminal__placeholder">
-              選擇一個 Script 並點擊「執行」來查看輸出...
-            </div>
+            <div className="terminal__placeholder">選擇一個 Script 並點擊「執行」來查看輸出...</div>
           )}
           {logs.map((log, i) => (
             <div key={i} className={`log-line log-${log.type}`}>
               <span className="log-prefix">
-                {log.type === 'stdout' ? '❯' : log.type === 'stderr' ? '⚠' : log.type === 'start' ? '▶' : '●'}
+                {log.type === 'stdout'
+                  ? '❯'
+                  : log.type === 'stderr'
+                    ? '⚠'
+                    : log.type === 'start'
+                      ? '▶'
+                      : '●'}
               </span>
               <span className="log-text">{log.text}</span>
             </div>

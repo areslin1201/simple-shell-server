@@ -123,7 +123,7 @@ app.get('/api/run-stream', (req, res) => {
   res.writeHead(200, {
     'Content-Type': 'text/event-stream',
     'Cache-Control': 'no-cache',
-    'Connection': 'keep-alive',
+    Connection: 'keep-alive',
     'X-Accel-Buffering': 'no',
   });
 
@@ -139,27 +139,27 @@ app.get('/api/run-stream', (req, res) => {
     env: { ...process.env },
   });
 
-  child.stdout.on('data', (chunk) => {
+  child.stdout.on('data', chunk => {
     const lines = chunk.toString().split('\n');
     lines.forEach(line => {
       if (line.trim()) sendEvent('stdout', line);
     });
   });
 
-  child.stderr.on('data', (chunk) => {
+  child.stderr.on('data', chunk => {
     const lines = chunk.toString().split('\n');
     lines.forEach(line => {
       if (line.trim()) sendEvent('stderr', line);
     });
   });
 
-  child.on('close', (code) => {
+  child.on('close', code => {
     sendEvent('exit', { code, success: code === 0 });
     res.write('data: [DONE]\n\n');
     res.end();
   });
 
-  child.on('error', (err) => {
+  child.on('error', err => {
     sendEvent('error', err.message);
     res.write('data: [DONE]\n\n');
     res.end();
@@ -190,5 +190,5 @@ function gracefulShutdown(signal) {
   }, 5000);
 }
 
-process.on('SIGINT', () => gracefulShutdown('SIGINT'));   // Ctrl+C
+process.on('SIGINT', () => gracefulShutdown('SIGINT')); // Ctrl+C
 process.on('SIGTERM', () => gracefulShutdown('SIGTERM')); // kill command
