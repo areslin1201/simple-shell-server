@@ -4,13 +4,18 @@
       "id": "deploy",
       "name": "部署",
       "icon": "rocket",
-      "scripts": ["deploy.sh"]
+      "scripts": [
+        "deploy.sh"
+      ]
     },
     {
       "id": "test",
-      "name": "測試",
+      "name": "測試1",
       "icon": "flask",
-      "scripts": ["cleanup.sh", "backup.sh"]
+      "scripts": [
+        "cleanup.sh",
+        "backup.sh"
+      ]
     }
   ]
 }

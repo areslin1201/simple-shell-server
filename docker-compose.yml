@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  server:
+    build:
+      context: ./server
+    ports:
+      - "4000:4000"
+    volumes:
+      # 將本機的 shell 資料夾掛載進 container，讓 server 可以讀取與執行
+      - ./shell:/app/shell
+      # （可選）開發環境下可以把 server 程式碼也掛載進去，這樣修改不用重 build
+      - ./server:/app/server
+      - /app/server/node_modules
+
+  client:
+    build:
+      context: ./client
+    ports:
+      - "5173:5173"
+    environment:
+      # 告訴 Vite proxy 將 /api 導向 server container 的 4000 port
+      - VITE_API_TARGET=http://server:4000
+    volumes:
+      # 開發環境掛載，讓本機修改能夠啟動 HMR，不用重 build
+      - ./client:/app/client
+      - /app/client/node_modules
+    depends_on:
+      - server

@@ -156,7 +156,6 @@ export default function AdminPanel({ categories, onClose, onRefresh }) {
                 value={newName}
                 onChange={e => setNewName(e.target.value)}
                 placeholder="分類名稱（如：🔥 監控）"
-                onKeyDown={e => e.key === 'Enter' && handleAdd()}
               />
               <select
                 className="admin-select"
@@ -167,7 +166,12 @@ export default function AdminPanel({ categories, onClose, onRefresh }) {
                   <option key={o.value} value={o.value}>{o.label}</option>
                 ))}
               </select>
-              <button className="btn btn--add" onClick={handleAdd} disabled={saving || !newName.trim()}>
+              <button 
+                type="button"
+                className="btn btn--add" 
+                disabled={saving || !newName.trim()}
+                onClick={handleAdd}
+              >
                 ＋ 新增
               </button>
             </div>
