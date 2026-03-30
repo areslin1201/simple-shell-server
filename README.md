@@ -21,6 +21,8 @@
 
 ### 2. 啟動服務
 
+記得更改`docker-compose`名稱跟路徑
+
 ```bash
 docker-compose up -d
 ```
