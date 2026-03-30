@@ -1,62 +1,71 @@
 import { useState, useEffect, useCallback } from 'react';
 import Sidebar from './components/Sidebar';
-import Terminal from './components/Terminal';
 import AdminPanel from './components/AdminPanel';
+import { PageRegistry } from './pages';
+import DefaultPage from './pages/DefaultPage';
 import './App.css';
 
 function App() {
-  const [categories, setCategories] = useState([]);
+  const [pages, setPages] = useState([]);
   const [activeId, setActiveId] = useState(null);
   const [showAdmin, setShowAdmin] = useState(false);
 
-  // 載入分類
-  const loadCategories = useCallback(() => {
-    fetch('/api/categories')
+  // 載入頁面配置
+  const loadPages = useCallback(() => {
+    fetch('/api/pages')
       .then(res => res.json())
       .then(data => {
-        const cats = data.categories || [];
-        setCategories(cats);
+        const pgList = data.pages || [];
+        setPages(pgList);
         // 如果當前選中的 id 不存在，選第一個
         setActiveId(prev => {
-          if (prev && cats.some(c => c.id === prev)) return prev;
-          return cats.length > 0 ? cats[0].id : null;
+          if (prev && pgList.some(p => p.id === prev)) return prev;
+          return pgList.length > 0 ? pgList[0].id : null;
         });
       })
-      .catch(err => console.error('載入分類失敗:', err));
+      .catch(err => console.error('載入頁面失敗:', err));
   }, []);
 
   useEffect(() => {
-    loadCategories();
-  }, [loadCategories]);
+    loadPages();
+  }, [loadPages]);
 
-  const activeCategory = categories.find(c => c.id === activeId);
+  const activePage = pages.find(p => p.id === activeId);
+
+  // 根據配置決定渲染哪個組件
+  const renderContent = () => {
+    if (!activePage) {
+      return (
+        <div className="empty-state">
+          <div className="empty-state__icon">？</div>
+          <h2 className="empty-state__title">尚無功能頁面</h2>
+          <p className="empty-state__desc">點擊左側「管理平台」來新增你的第一個功能頁面</p>
+        </div>
+      );
+    }
+
+    const PageComponent = PageRegistry[activePage.component] || DefaultPage;
+    return <PageComponent page={activePage} />;
+  };
 
   return (
     <div className="app-layout">
       <Sidebar
-        categories={categories}
+        pages={pages}
         activeId={activeId}
         onSelect={setActiveId}
         onOpenAdmin={() => setShowAdmin(true)}
       />
 
       <main className="main-content">
-        {activeCategory ? (
-          <Terminal scripts={activeCategory.scripts} categoryName={activeCategory.name} />
-        ) : (
-          <div className="empty-state">
-            <div className="empty-state__icon">？</div>
-            <h2 className="empty-state__title">尚無功能分類</h2>
-            <p className="empty-state__desc">點擊左側「管理平台」來新增你的第一個功能分類</p>
-          </div>
-        )}
+        {renderContent()}
       </main>
 
       {showAdmin && (
         <AdminPanel
-          categories={categories}
+          pages={pages}
           onClose={() => setShowAdmin(false)}
-          onRefresh={loadCategories}
+          onRefresh={loadPages}
         />
       )}
     </div>

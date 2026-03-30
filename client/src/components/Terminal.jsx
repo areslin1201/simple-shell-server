@@ -1,39 +1,54 @@
 import { useState, useEffect, useRef } from 'react';
 
-export default function Terminal({ scripts, categoryName }) {
-  const [selectedScript, setSelectedScript] = useState('');
-  const [args, setArgs] = useState('');
+export default function Terminal({ page }) {
+  const [formState, setFormState] = useState({});
   const [logs, setLogs] = useState([]);
   const [running, setRunning] = useState(false);
   const [exitInfo, setExitInfo] = useState(null);
   const logEndRef = useRef(null);
   const eventSourceRef = useRef(null);
 
-  // 當 scripts 改變時重設選中項
+  // 當頁面改變時，初始化表單狀態
   useEffect(() => {
-    if (scripts.length > 0) {
-      setSelectedScript(scripts[0]);
-    } else {
-      setSelectedScript('');
-    }
+    const initialState = {};
+    (page.inputs || []).forEach(input => {
+      initialState[input.id] = input.default || '';
+    });
+    setFormState(initialState);
     setLogs([]);
     setExitInfo(null);
-  }, [scripts]);
+  }, [page]);
 
   // 自動捲動到底部
   useEffect(() => {
     logEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
+  // 更新表單欄位
+  const handleInputChange = (id, value) => {
+    setFormState(prev => ({ ...prev, [id]: value }));
+  };
+
   // 執行選中的 shell script（串流模式）
   const handleRun = () => {
-    if (!selectedScript || running) return;
+    if (!page.script || running) return;
 
     setRunning(true);
     setLogs([]);
     setExitInfo(null);
 
-    const params = new URLSearchParams({ script: selectedScript, args: args.trim() });
+    // 根據 page.inputs 與 formState 組合參數
+    const assembledArgs = (page.inputs || [])
+      .map(input => {
+        const value = formState[input.id];
+        if (value === undefined || value === '') return '';
+        const prefix = input.prefix || '';
+        return `${prefix}${value}`;
+      })
+      .filter(Boolean)
+      .join(' ');
+
+    const params = new URLSearchParams({ script: page.script, args: assembledArgs });
     const url = `/api/run-stream?${params.toString()}`;
 
     const es = new EventSource(url);
@@ -88,47 +103,51 @@ export default function Terminal({ scripts, categoryName }) {
     <div className="terminal-panel">
       {/* Header bar */}
       <div className="terminal-panel__header">
-        <h2 className="terminal-panel__title">{categoryName}</h2>
+        <h2 className="terminal-panel__title">{page.name}</h2>
+        <code className="terminal-panel__script-name">{page.script}</code>
       </div>
 
       {/* Controls */}
       <div className="terminal-panel__controls">
-        <div className="control-row">
-          <label className="control-label">Script</label>
-          <select
-            className="control-select"
-            value={selectedScript}
-            onChange={e => setSelectedScript(e.target.value)}
-            disabled={running}
-          >
-            {scripts.length === 0 && <option value="">— 無可用 Script —</option>}
-            {scripts.map(s => (
-              <option key={s} value={s}>
-                {s}
-              </option>
+        {(page.inputs || []).length > 0 ? (
+          <div className="dynamic-form">
+            {page.inputs.map(input => (
+              <div key={input.id} className="control-row">
+                <label className="control-label">{input.label}</label>
+                {input.type === 'select' ? (
+                  <select
+                    className="control-select"
+                    value={formState[input.id] || ''}
+                    onChange={e => handleInputChange(input.id, e.target.value)}
+                    disabled={running}
+                  >
+                    {(input.options || []).map(opt => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    className="control-input"
+                    type="text"
+                    value={formState[input.id] || ''}
+                    onChange={e => handleInputChange(input.id, e.target.value)}
+                    placeholder={input.placeholder || ''}
+                    disabled={running}
+                  />
+                )}
+              </div>
             ))}
-          </select>
-        </div>
-
-        <div className="control-row">
-          <label className="control-label">參數</label>
-          <input
-            className="control-input"
-            type="text"
-            value={args}
-            onChange={e => setArgs(e.target.value)}
-            placeholder="例如: --env production --verbose"
-            onKeyDown={e => e.key === 'Enter' && handleRun()}
-            disabled={running}
-          />
-        </div>
+          </div>
+        ) : (
+          <div className="control-row empty-inputs">
+            <span className="control-label text-muted">此腳本不需要輸入參數</span>
+          </div>
+        )}
 
         <div className="control-actions">
-          <button
-            onClick={handleRun}
-            disabled={running || !selectedScript}
-            className="btn btn--run"
-          >
+          <button onClick={handleRun} disabled={running || !page.script} className="btn btn--run">
             {running ? '⏳ 執行中...' : '▶ 執行'}
           </button>
           {running && (

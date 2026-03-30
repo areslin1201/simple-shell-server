@@ -832,11 +832,20 @@ body {
   border-bottom: 1px solid var(--border-subtle);
 }
 
+.admin-card__main-info {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
 /* Add form */
 .admin-add-form {
   display: flex;
   gap: 10px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .admin-input {
@@ -997,6 +1006,188 @@ body {
 .admin-panel__body::-webkit-scrollbar-thumb {
   background: var(--border-default);
   border-radius: 3px;
+}
+
+/* ═══════════════════════════════════════
+   PAGES MODE EXTENSIONS
+   ═══════════════════════════════════════ */
+
+/* Terminal Script Badge */
+.terminal-panel__script-name {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 11px;
+  background: var(--bg-tertiary);
+  padding: 4px 10px;
+  border-radius: 6px;
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  font-weight: 500;
+}
+
+/* Dynamic Form */
+.dynamic-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.empty-inputs {
+  padding: 16px 0;
+  justify-content: center;
+  color: var(--text-muted);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Admin Pages Panel Layout */
+.admin-panel--pages {
+  max-width: 900px;
+}
+
+.admin-card--page {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-form-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-select--full {
+  width: 100%;
+}
+
+/* Admin Inputs Section (Dynamic Fields) */
+.admin-card__inputs-section {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  border: 1px dashed var(--border-strong);
+}
+
+.admin-card__inputs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admin-card__inputs-header label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.btn--add-field {
+  padding: 6px 14px;
+  font-size: 12px;
+  background: var(--accent-primary-glow);
+  color: var(--accent-primary);
+  border: 1px solid var(--accent-primary);
+  font-weight: 600;
+}
+
+.btn--add-field:hover {
+  background: var(--accent-primary);
+  color: white;
+}
+
+.admin-inputs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-input-edit-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s;
+}
+
+.admin-input-edit-card:focus-within {
+  border-color: var(--accent-primary);
+}
+
+.admin-input-edit-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-input-edit-row input, 
+.admin-input-edit-row select {
+  padding: 8px 12px;
+  font-size: 13px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  outline: none;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.2s;
+}
+
+.admin-input-edit-row input:focus,
+.admin-input-edit-row select:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 2px var(--accent-primary-glow);
+}
+
+.admin-input-edit-row input:first-child { flex: 2; }
+.admin-input-edit-row select { flex: 1.5; }
+.admin-input-edit-row input:nth-child(3) { flex: 1.5; }
+
+.admin-input-full {
+  width: 100%;
+}
+
+.btn--remove-field {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.btn--remove-field:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--accent-danger);
+}
+
+.admin-no-data {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+  font-style: italic;
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: 8px;
 }
 
 /* ═══════════════════════════════════════

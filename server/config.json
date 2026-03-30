@@ -1,16 +1,3 @@
 {
-  "categories": [
-    {
-      "id": "deploy",
-      "name": "部署",
-      "icon": "rocket",
-      "scripts": ["deploy.sh"]
-    },
-    {
-      "id": "test",
-      "name": "測試1",
-      "icon": "flask",
-      "scripts": ["cleanup.sh", "backup.sh"]
-    }
-  ]
+  "pages": []
 }

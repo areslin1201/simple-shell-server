@@ -17,9 +17,10 @@ app.use(express.json());
 function readConfig() {
   try {
     const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
-    return JSON.parse(raw);
+    const data = JSON.parse(raw);
+    return { pages: data.pages || [] };
   } catch {
-    return { categories: [] };
+    return { pages: [] };
   }
 }
 
@@ -45,54 +46,58 @@ app.get('/api/shell-files', (req, res) => {
   });
 });
 
-// ✅ API：取得所有分類（含對應 scripts）
-app.get('/api/categories', (req, res) => {
+// ✅ API：取得所有頁面（含對應 script 與 inputs）
+app.get('/api/pages', (req, res) => {
   const config = readConfig();
-  res.json({ categories: config.categories });
+  res.json({ pages: config.pages });
 });
 
-// ✅ API：新增分類
-app.post('/api/categories', (req, res) => {
-  const { name, icon, scripts } = req.body;
+// ✅ API：新增頁面
+app.post('/api/pages', (req, res) => {
+  const { name, icon, script, inputs, component } = req.body;
   if (!name) return res.status(400).json({ error: '名稱為必填' });
 
   const config = readConfig();
   const id = name.replace(/[^a-zA-Z0-9]/g, '_').toLowerCase() + '_' + Date.now();
-  const newCategory = {
+  const newPage = {
     id,
     name,
     icon: icon || 'terminal',
-    scripts: scripts || [],
+    script: script || '',
+    inputs: inputs || [],
+    component: component || 'Default',
   };
-  config.categories.push(newCategory);
+  config.pages.push(newPage);
   writeConfig(config);
-  res.json({ success: true, category: newCategory });
+  res.json({ success: true, page: newPage });
 });
 
-// ✅ API：修改分類
-app.put('/api/categories/:id', (req, res) => {
+// ✅ API：修改頁面
+app.put('/api/pages/:id', (req, res) => {
   const { id } = req.params;
-  const { name, icon, scripts } = req.body;
+  const { name, icon, script, inputs, component } = req.body;
   const config = readConfig();
-  const idx = config.categories.findIndex(c => c.id === id);
-  if (idx === -1) return res.status(404).json({ error: '找不到該分類' });
+  const idx = config.pages.findIndex(p => p.id === id);
+  if (idx === -1) return res.status(404).json({ error: '找不到該頁面' });
 
-  if (name !== undefined) config.categories[idx].name = name;
-  if (icon !== undefined) config.categories[idx].icon = icon;
-  if (scripts !== undefined) config.categories[idx].scripts = scripts;
+  if (name !== undefined) config.pages[idx].name = name;
+  if (icon !== undefined) config.pages[idx].icon = icon;
+  if (script !== undefined) config.pages[idx].script = script;
+  if (inputs !== undefined) config.pages[idx].inputs = inputs;
+  if (component !== undefined) config.pages[idx].component = component;
 
   writeConfig(config);
-  res.json({ success: true, category: config.categories[idx] });
+  res.json({ success: true, page: config.pages[idx] });
 });
 
-// ✅ API：刪除分類
-app.delete('/api/categories/:id', (req, res) => {
+// ✅ API：刪除頁面
+app.delete('/api/pages/:id', (req, res) => {
   const { id } = req.params;
   const config = readConfig();
-  const idx = config.categories.findIndex(c => c.id === id);
-  if (idx === -1) return res.status(404).json({ error: '找不到該分類' });
+  const idx = config.pages.findIndex(p => p.id === id);
+  if (idx === -1) return res.status(404).json({ error: '找不到該頁面' });
 
-  config.categories.splice(idx, 1);
+  config.pages.splice(idx, 1);
   writeConfig(config);
   res.json({ success: true });
 });

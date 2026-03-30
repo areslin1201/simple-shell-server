@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function Sidebar({ categories, activeId, onSelect, onOpenAdmin }) {
+export default function Sidebar({ pages, activeId, onSelect, onOpenAdmin }) {
   const [collapsed, setCollapsed] = useState(false);
 
   const iconMap = {
@@ -39,19 +39,18 @@ export default function Sidebar({ categories, activeId, onSelect, onOpenAdmin })
         </button>
       </div>
 
-      {/* Category list */}
+      {/* Page list */}
       <nav className="sidebar__nav">
-        <div className="sidebar__label">{!collapsed && '功能分類'}</div>
-        {categories.map(cat => (
+        <div className="sidebar__label">{!collapsed && '功能頁面'}</div>
+        {pages.map(pg => (
           <button
-            key={cat.id}
-            className={`sidebar__item ${activeId === cat.id ? 'sidebar__item--active' : ''}`}
-            onClick={() => onSelect(cat.id)}
-            title={cat.name}
+            key={pg.id}
+            className={`sidebar__item ${activeId === pg.id ? 'sidebar__item--active' : ''}`}
+            onClick={() => onSelect(pg.id)}
+            title={pg.name}
           >
-            <span className="sidebar__item-icon">{iconMap[cat.icon] || '📋'}</span>
-            {!collapsed && <span className="sidebar__item-text">{cat.name}</span>}
-            {!collapsed && <span className="sidebar__item-badge">{cat.scripts.length}</span>}
+            <span className="sidebar__item-icon">{iconMap[pg.icon] || '📋'}</span>
+            {!collapsed && <span className="sidebar__item-text">{pg.name}</span>}
           </button>
         ))}
       </nav>
