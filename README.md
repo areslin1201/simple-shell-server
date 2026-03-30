@@ -1,31 +1,27 @@
 # ⚡ ShellHub — Shell Script 管理與執行平台
 
-一個基於 **React + Express** 的 Web 平台，可透過瀏覽器管理與即時執行 Shell Script，支援分類管理、參數輸入、SSE 串流即時輸出。
+一個基於 **React + Express** 的專業維運平台，可透過瀏覽器管理與執行 Shell Script。
 
----
-
-## 環境要求
-
-在運行本專案前，請確認您的電腦已安裝以下工具與套件：
-
-- **Node.js** (建議 v18 以上) 與 **npm**：用於安裝前後端專案依賴。
-- **Docker** 與 **Docker Compose**：用於容器化運行前後端服務。
+### ✨ 特色功能
+- **🖥️ 專屬中控台**：內建專為「部署」與「維護」設計的專業 UI 頁面。
+- **📊 即時資訊**：整合系統狀態指標（磁碟、健康度）與即時日誌串流。
+- **🛡️ 生產環境安全鎖**：防止在正式環境下誤轉執行敏感腳本。
+- **⚙️ 高度可擴充性**：支援自定義 React 組件作為功能頁面。
 
 ---
 
 ## 🚀 快速開始
 
-### 一鍵安裝所需環境
-
+### 1. 安裝環境
 ```bash
 ./first-time-install.sh
 ```
 
-### 啟動
-
+### 2. 啟動服務
 ```bash
 docker-compose up -d
 ```
+訪問：[http://localhost:5173](http://localhost:5173)
 
 開啟前端連結：[http://localhost:5173](http://localhost:5173)
 

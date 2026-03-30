@@ -1,43 +1,46 @@
 {
   "pages": [
     {
-      "id": "_____1774837693503",
-      "name": "部署測試",
-      "icon": "deploy",
+      "id": "maintenance_system",
+      "name": "系統維護與清理",
+      "icon": "terminal",
+      "script": "cleanup.sh",
+      "inputs": [],
+      "component": "SystemMaintenance"
+    },
+    {
+      "id": "deploy_prod",
+      "name": "專案發佈控制中心",
+      "icon": "rocket",
+      "script": "deploy.sh",
+      "inputs": [],
+      "component": "DeployDashboard"
+    },
+    {
+      "id": "default_test",
+      "name": "多參數動態測試",
+      "icon": "gear",
       "script": "deploy.sh",
       "inputs": [
         {
-          "id": "input_1774837696012",
-          "label": "直接帶入後面參數",
+          "id": "env_input",
+          "label": "目標環境",
+          "type": "select",
+          "options": [
+            "staging",
+            "production"
+          ],
+          "prefix": "--env "
+        },
+        {
+          "id": "version_input",
+          "label": "版本號碼",
           "type": "text",
-          "placeholder": "不管--直接帶入後面指令，例如給 A B，查看結果",
-          "prefix": ""
+          "placeholder": "如: v1.0.1",
+          "prefix": "--version "
         }
       ],
       "component": "Default"
-    },
-    {
-      "id": "_____1774838177602",
-      "name": "清理測試",
-      "icon": "terminal",
-      "script": "cleanup.sh",
-      "inputs": [
-        {
-          "id": "input_1774838181115",
-          "label": "環境變數",
-          "type": "text",
-          "placeholder": "",
-          "prefix": "--env"
-        },
-        {
-          "id": "input_1774838191049",
-          "label": "版本號",
-          "type": "text",
-          "placeholder": "",
-          "prefix": "--version"
-        }
-      ],
-      "component": "CustomDeploy"
     }
   ]
 }
