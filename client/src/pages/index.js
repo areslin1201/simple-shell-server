@@ -13,6 +13,6 @@ export const PageRegistry = {
 
 // 供 AdminPanel 顯示選單使用
 export const AVAILABLE_COMPONENTS = [
-  { value: 'Default', label: '💠 預設動態表單 (Default)' },
-  { value: 'CustomDeploy', label: '🚀 專案部署自定義頁面 (CustomDeploy)' },
+  { value: 'Default', label: '預設動態表單' },
+  { value: 'CustomDeploy', label: '自定義頁面-cleanup範例' },
 ];

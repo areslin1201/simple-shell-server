@@ -1,3 +1,43 @@
 {
-  "pages": []
+  "pages": [
+    {
+      "id": "_____1774837693503",
+      "name": "部署測試",
+      "icon": "deploy",
+      "script": "deploy.sh",
+      "inputs": [
+        {
+          "id": "input_1774837696012",
+          "label": "直接帶入後面參數",
+          "type": "text",
+          "placeholder": "不管--直接帶入後面指令，例如給 A B，查看結果",
+          "prefix": ""
+        }
+      ],
+      "component": "Default"
+    },
+    {
+      "id": "_____1774838177602",
+      "name": "清理測試",
+      "icon": "terminal",
+      "script": "cleanup.sh",
+      "inputs": [
+        {
+          "id": "input_1774838181115",
+          "label": "環境變數",
+          "type": "text",
+          "placeholder": "",
+          "prefix": "--env"
+        },
+        {
+          "id": "input_1774838191049",
+          "label": "版本號",
+          "type": "text",
+          "placeholder": "",
+          "prefix": "--version"
+        }
+      ],
+      "component": "CustomDeploy"
+    }
+  ]
 }

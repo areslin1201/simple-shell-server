@@ -4,6 +4,7 @@ import { AVAILABLE_COMPONENTS } from '../pages';
 const ICON_OPTIONS = [
   { value: 'rocket', label: '🚀 Rocket' },
   { value: 'flask', label: '🧪 Flask' },
+  { value: 'deploy', label: '📦 Deploy' },
   { value: 'terminal', label: '💻 Terminal' },
   { value: 'gear', label: '⚙️ Gear' },
   { value: 'server', label: '🖥️ Server' },
@@ -40,7 +41,9 @@ export default function AdminPanel({ pages, onClose, onRefresh }) {
       .catch(() => setShellFiles([]));
 
     // 複製一份用於編輯
-    setEditPages(pages.map(p => ({ ...p, inputs: p.inputs ? [...p.inputs.map(i => ({ ...i }))] : [] })));
+    setEditPages(
+      pages.map(p => ({ ...p, inputs: p.inputs ? [...p.inputs.map(i => ({ ...i }))] : [] }))
+    );
   }, [pages]);
 
   const showMessage = (text, type = 'success') => {
@@ -56,12 +59,12 @@ export default function AdminPanel({ pages, onClose, onRefresh }) {
       const res = await fetch('/api/pages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          name: newName.trim(), 
-          icon: newIcon, 
-          script: newScript, 
+        body: JSON.stringify({
+          name: newName.trim(),
+          icon: newIcon,
+          script: newScript,
           component: newComponent,
-          inputs: [] 
+          inputs: [],
         }),
       });
       if (res.ok) {
@@ -133,7 +136,10 @@ export default function AdminPanel({ pages, onClose, onRefresh }) {
     setEditPages(prev => {
       const next = [...prev];
       const page = { ...next[idx] };
-      page.inputs = [...page.inputs, { id: `input_${Date.now()}`, label: '新欄位', type: 'text', placeholder: '', prefix: '' }];
+      page.inputs = [
+        ...page.inputs,
+        { id: `input_${Date.now()}`, label: '', type: 'text', placeholder: '', prefix: '' },
+      ];
       next[idx] = page;
       return next;
     });
@@ -301,12 +307,17 @@ export default function AdminPanel({ pages, onClose, onRefresh }) {
                   <div className="admin-card__inputs-section">
                     <div className="admin-card__inputs-header">
                       <label>自定義輸入欄位</label>
-                      <button className="btn btn--small btn--add-field" onClick={() => addInput(pgIdx)}>
+                      <button
+                        className="btn btn--small btn--add-field"
+                        onClick={() => addInput(pgIdx)}
+                      >
                         ＋ 新增欄位
                       </button>
                     </div>
                     <div className="admin-inputs-list">
-                      {page.inputs.length === 0 && <div className="admin-no-data">尚未設定任何輸入欄位</div>}
+                      {page.inputs.length === 0 && (
+                        <div className="admin-no-data">尚未設定任何輸入欄位</div>
+                      )}
                       {page.inputs.map((input, inputIdx) => (
                         <div key={input.id || inputIdx} className="admin-input-edit-card">
                           <div className="admin-input-edit-row">
@@ -315,7 +326,9 @@ export default function AdminPanel({ pages, onClose, onRefresh }) {
                               <input
                                 placeholder="如: 環境名稱"
                                 value={input.label}
-                                onChange={e => updateInput(pgIdx, inputIdx, 'label', e.target.value)}
+                                onChange={e =>
+                                  updateInput(pgIdx, inputIdx, 'label', e.target.value)
+                                }
                               />
                             </div>
                             <div className="admin-form-group" style={{ flex: 1.5 }}>
@@ -333,28 +346,53 @@ export default function AdminPanel({ pages, onClose, onRefresh }) {
                               <input
                                 placeholder="如: --env "
                                 value={input.prefix}
-                                onChange={e => updateInput(pgIdx, inputIdx, 'prefix', e.target.value)}
+                                onChange={e =>
+                                  updateInput(pgIdx, inputIdx, 'prefix', e.target.value)
+                                }
                               />
                             </div>
-                            <button className="btn--remove-field" onClick={() => removeInput(pgIdx, inputIdx)} title="刪除此欄位">✕</button>
+                            <button
+                              className="btn--remove-field"
+                              onClick={() => removeInput(pgIdx, inputIdx)}
+                              title="刪除此欄位"
+                            >
+                              ✕
+                            </button>
                           </div>
 
                           <div className="admin-input-edit-row">
                             <div className="admin-form-group" style={{ flex: 1 }}>
-                              <label>{input.type === 'select' ? '選項 (用逗號分隔)' : '提示字 (Placeholder) / 預設值'}</label>
+                              <label>
+                                {input.type === 'select'
+                                  ? '選項 (用逗號分隔)'
+                                  : '提示字 (Placeholder) / 預設值'}
+                              </label>
                               {input.type === 'select' ? (
                                 <input
                                   className="admin-input-full"
                                   placeholder="如: dev,stag,prod"
-                                  value={Array.isArray(input.options) ? input.options.join(',') : input.options || ''}
-                                  onChange={e => updateInput(pgIdx, inputIdx, 'options', e.target.value.split(',').map(s => s.trim()))}
+                                  value={
+                                    Array.isArray(input.options)
+                                      ? input.options.join(',')
+                                      : input.options || ''
+                                  }
+                                  onChange={e =>
+                                    updateInput(
+                                      pgIdx,
+                                      inputIdx,
+                                      'options',
+                                      e.target.value.split(',').map(s => s.trim())
+                                    )
+                                  }
                                 />
                               ) : (
                                 <input
                                   className="admin-input-full"
                                   placeholder="如: 請輸入環境..."
                                   value={input.placeholder || ''}
-                                  onChange={e => updateInput(pgIdx, inputIdx, 'placeholder', e.target.value)}
+                                  onChange={e =>
+                                    updateInput(pgIdx, inputIdx, 'placeholder', e.target.value)
+                                  }
                                 />
                               )}
                             </div>
