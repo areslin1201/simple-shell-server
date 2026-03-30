@@ -9,9 +9,13 @@ services:
     volumes:
       # 將本機的 shell 資料夾掛載進 container，讓 server 可以讀取與執行
       - ./shell:/app/shell
-      # （可選）開發環境下可以把 server 程式碼也掛載進去，這樣修改不用重 build
+      # 開發環境下可以把 server 程式碼也掛載進去，這樣修改不用重 build
       - ./server:/app/server
       - /app/server/node_modules
+      # 將 Mac 上的新資料夾，掛載到容器內的 /app/output
+      - /Users/areslin/Desktop/ares/simple-shell-server-volume:/app/output
+      # 將存放所有 Git 專案的父目錄，掛載到容器內的 /app/workspace
+      - /Users/areslin/Desktop/ares/simple-shell-server-project:/app/workspace
 
   client:
     build:

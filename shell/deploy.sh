@@ -53,3 +53,14 @@ echo ""
 echo -e "${GREEN}=========================================${NC}"
 echo -e "${GREEN}✅ 部署成功！服務已切換至版本: ${VERSION}${NC}"
 echo -e "${GREEN}=========================================${NC}"
+
+
+# 取得當前目錄 (會在 /app/shell)
+CURRENT_DIR=$(pwd)
+echo "📍 目前所在的目錄是: $CURRENT_DIR"
+
+# 直接在上一層的 output 資料夾中建立檔案
+# ../output 對應的就是您 Mac 上的 simple-shell-server-volume
+touch ../output/new_config.txt
+
+echo "✅ 成功建立檔案！請檢查 Mac 上的 simple-shell-server-volume 資料夾。"
