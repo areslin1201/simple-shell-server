@@ -1,7 +1,7 @@
 FROM node:20-alpine
 
 # 安裝 bash 或其他你在 script 中會用到的工具
-RUN apk add --no-cache bash curl openssh
+RUN apk add --no-cache bash curl openssh zip
 
 WORKDIR /app/server
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# --- Professional Deploy Simulation ---
+# --- 環境變數與輔助函式 ---
 
 # ANSI Color Codes
 GREEN='\033[0;32m'
@@ -9,7 +9,16 @@ YELLOW='\033[1;33m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-# 1. 解析參數
+# 模擬步驟的輔助函式
+simulate_step() {
+    local msg=$1
+    local duration=$2
+    echo -ne " ${BLUE}●${NC} ${msg}..."
+    sleep $duration
+    echo -e "  ${GREEN}DONE${NC}"
+}
+
+# --- 1. 解析參數 (預設值) ---
 ENV="staging"
 VERSION="latest"
 
@@ -26,41 +35,52 @@ echo -e "目標環境: ${YELLOW}${ENV}${NC}"
 echo -e "發佈版本: ${YELLOW}${VERSION}${NC}"
 echo ""
 
-# 2. 模擬步驟
-simulate_step() {
-    local msg=$1
-    local duration=$2
-    echo -ne " ${BLUE}●${NC} ${msg}..."
-    sleep $duration
-    echo -e "  ${GREEN}DONE${NC}"
-}
-
-simulate_step "正在檢查系統相依性 (Node.js, Docker)" 1
-simulate_step "正在從 Git 存儲庫拉取最新代碼 [branch: main]" 2
-simulate_step "正在進行代碼安全掃描 (npm audit)" 1.5
-
-if [ "$ENV" == "production" ]; then
-    echo -e "${YELLOW}⚠️ 注意：偵測到生產環境，運行額外驗證步驟...${NC}"
-    simulate_step "正在備份現有服務狀態與資料庫資料" 2
-fi
-
-simulate_step "正在執行前端代碼編譯 (Vite Build)" 3
-simulate_step "正在推送靜態資源至 CDN" 1.5
-simulate_step "正在自動重啟 API Server 容器" 1
-simulate_step "正在進行服務存活檢查 (Health Check)" 1
-
-echo ""
-echo -e "${GREEN}=========================================${NC}"
-echo -e "${GREEN}✅ 部署成功！服務已切換至版本: ${VERSION}${NC}"
-echo -e "${GREEN}=========================================${NC}"
-
-
 # 取得當前目錄 (會在 /app/shell)
 CURRENT_DIR=$(pwd)
-echo "📍 目前所在的目錄是: $CURRENT_DIR"
 
-# 直接在上一層的 output 資料夾中建立檔案
-# ../output 對應的就是您 Mac 上的 simple-shell-server-volume
-touch ../output/new_config.txt
+# --- 2. Next.js 專案建置與打包 (Workspace 整合) ---
+WORKSPACE_DIR="/app/workspace"
+PROJECT_NAME="project-a"
+OUTPUT_DIR="/app/output/project-a"
 
-echo "✅ 成功建立檔案！請檢查 Mac 上的 simple-shell-server-volume 資料夾。"
+# 確保輸出目錄存在
+mkdir -p "$OUTPUT_DIR"
+
+if [ -d "$WORKSPACE_DIR/$PROJECT_NAME" ]; then
+    echo -e "${YELLOW}=== 📦 進入 Workspace 進行實際專案建置: ${PROJECT_NAME} ===${NC}"
+    cd "$WORKSPACE_DIR/$PROJECT_NAME"
+
+    # 1. 安裝依賴
+    echo -e "${BLUE}●${NC} 正在執行 npm install..."
+    npm install --no-audit --no-fund --quiet
+    if [ $? -ne 0 ]; then echo -e "${RED}❌ npm install 失敗${NC}"; exit 1; fi
+
+    # 2. 執行建置
+    echo -e "${BLUE}●${NC} 正在執行 npm run build (next build)..."
+    npm run build
+    if [ $? -ne 0 ]; then echo -e "${RED}❌ npm run build 失敗${NC}"; exit 1; fi
+
+    # 3. 判斷建置輸出路徑
+    BUILD_FOLDER=".next"
+    if [ -d "out" ]; then BUILD_FOLDER="out"; fi
+    
+    # 4. 壓縮產物
+    ZIP_NAME="dist.zip"
+    echo -e "${BLUE}●${NC} 正在壓縮建置產物 (${BUILD_FOLDER} -> ${ZIP_NAME})..."
+    zip -r "$ZIP_NAME" "$BUILD_FOLDER" > /dev/null
+
+    # 5. 移動至輸出目錄
+    echo -e "${BLUE}●${NC} 正在將打包檔傳送至輸出磁碟..."
+    mv "$ZIP_NAME" "$OUTPUT_DIR/"
+
+    echo -e "${GREEN}✅ 專案建置與打包完成！輸出位置: ${OUTPUT_DIR}/${ZIP_NAME}${NC}"
+    
+    # 切換回原來的 shell 目錄
+    cd "$CURRENT_DIR"
+else
+    echo -e "${RED}❌ 找不到 Workspace 專案目錄: $WORKSPACE_DIR/$PROJECT_NAME${NC}"
+    echo -e "請確認 docker-compose.yml 中的掛載路徑是否正確。"
+fi
+
+echo ""
+echo -e "${GREEN}🎉 所有任務已完成！${NC}"
