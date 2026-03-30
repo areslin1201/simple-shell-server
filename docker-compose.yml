@@ -4,6 +4,8 @@ services:
   server:
     build:
       context: ./server
+    # 設定重啟策略（開機即用）
+    restart: always
     ports:
       - '4000:4000'
     volumes:

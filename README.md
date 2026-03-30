@@ -3,6 +3,7 @@
 一個基於 **React + Express** 的專業維運平台，可透過瀏覽器管理與執行 Shell Script。
 
 ### ✨ 特色功能
+
 - **🖥️ 專屬中控台**：內建專為「部署」與「維護」設計的專業 UI 頁面。
 - **📊 即時資訊**：整合系統狀態指標（磁碟、健康度）與即時日誌串流。
 - **🛡️ 生產環境安全鎖**：防止在正式環境下誤轉執行敏感腳本。
@@ -13,14 +14,17 @@
 ## 🚀 快速開始
 
 ### 1. 安裝環境
+
 ```bash
 ./first-time-install.sh
 ```
 
 ### 2. 啟動服務
+
 ```bash
 docker-compose up -d
 ```
+
 訪問：[http://localhost:5173](http://localhost:5173)
 
 開啟前端連結：[http://localhost:5173](http://localhost:5173)
@@ -94,3 +98,15 @@ ShellHub 支援兩種頁面渲染方式，請根據需求選擇：
 ### 4. 執行與測試
 
 回到首頁點擊左側新頁面，輸入參數並點擊 **「▶ 執行」** 即可看到即時輸出！
+
+## 記得開機即用
+
+設定Restart Policy
+
+```bash
+# check all
+docker ps -a
+
+# check restart policy
+docker inspect -f '{{.HostConfig.RestartPolicy.Name}}' simple-shell-server-server-1
+```
